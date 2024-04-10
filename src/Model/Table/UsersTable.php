@@ -79,11 +79,6 @@ class UsersTable extends Table
             ->requirePresence('confirm_password', 'create')
             ->notEmptyString('confirm_password');
 
-        $validator
-            ->integer('status')
-            ->requirePresence('status', 'create')
-            ->notEmptyString('status');
-
         return $validator;
     }
 

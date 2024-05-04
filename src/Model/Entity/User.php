@@ -50,4 +50,14 @@ class User extends Entity
         $hasher = new DefaultPasswordHasher();
         return $hasher->hash($password);
     }
+    
+    public function hasRole($roleName)
+    {
+        foreach ($this->roles as $role) {
+                if ($role->name === $roleName) {
+                    return true;
+                }
+            }
+        return false;
+    }
 }

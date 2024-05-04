@@ -49,11 +49,23 @@ class AppController extends Controller
             'loginAction' => [
                 'controller' => 'Users',
                 'action' => 'login',
+                'prefix' => false
+            ],
+            'loginRedirect' => [
+                'controller' => 'Users',
+                'action' => 'index',
+                'prefix' => 'admin', // adjust if needed
+            ],
+            'logoutRedirect' => [
+                'controller' => 'Users',
+                'action' => 'login',
+                'prefix' =>false
             ],
             'authError' => 'Did you really think you are allowed to see that?',
             'authenticate' => [
                 'Form' => [
-                    'fields' => ['username' => 'email', 'password' => 'password']
+                    'fields' => ['username' => 'email', 'password' => 'password'],
+                    'finder' => 'userRole'
                 ]
             ],
             'storage' => 'Session'
@@ -64,5 +76,9 @@ class AppController extends Controller
          * see https://book.cakephp.org/3/en/controllers/components/security.html
          */
         //$this->loadComponent('Security');
+    }
+
+    public function beforeRender(Event $event) {
+        $this->set('auth', $this->request->session()->read('Auth'));
     }
 }

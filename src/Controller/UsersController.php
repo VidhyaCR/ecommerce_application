@@ -131,24 +131,46 @@ class UsersController extends AppController
     }
     public function login() {
         // log the user in
+        if($this->Auth->user('id')) {
+            // $user = $this->Auth->user();
+            // if($user['roles_user']['role']['name'] == 'user') {
+            //     $this->Flash->warning(__("You're already logged in!!"));
+            //     return $this->redirect(['controller'=>'users','action'=>'index']);
+            // }
+            // else if($user['roles_user']['role']['name'] == 'admin') {
+            //     $this->Flash->warning(__("You're already logged in!!"));
+            //     return $this->redirect(['prefix' => 'admin', 'controller'=>'users','action'=>'index']);
+            // }
+            // else {
+
+            // }
+            return $this->redirect($this->Auth->redirectUrl());
+        }
         if($this->request->is('post')) {
-            if($this->Auth->user('id')) {
-                $this->Flash->warning(__("You're already logged in!!"));
-                return $this->redirect(['controller'=>'users','action'=>'index']);
-            }
-            else {
+           // dd($this->request);
             $user = $this->Auth->identify();
+            //dd($user['roles_user']['role']['name']);
             if($user) {
-                $this->Auth->setUser();
+                $this->Auth->setUser($user);
+
                 $this->Flash->success('Login successfull');
-                return $this->redirect(['controller' => 'users', 'action' => 'index']);
+                if($user['roles_user']['role']['name'] == 'user')
+                    return $this->redirect(['controller' => 'users', 'action' => 'index']);
+                else
+                    return $this->redirect(['prefix' => 'admin', 'controller' => 'users', 'action' => 'index']);
             }
             $this->Flash->error(__('Sorry, The login was not successfull'));
         }
-    }
+    
         
     }
     public function forgotPassword() {
 
+    }
+    public function logout() {
+        $this->request->getSession()->destroy();
+        $this->redirect($this->Auth->logout());
+        $this->Flash->success(__('You are now logged out'));
+        
     }
 }

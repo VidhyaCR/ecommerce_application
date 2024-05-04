@@ -21,6 +21,7 @@ use Cake\Http\Middleware\CsrfProtectionMiddleware;
 use Cake\Routing\RouteBuilder;
 use Cake\Routing\Router;
 use Cake\Routing\Route\DashedRoute;
+use App\Middleware\AdminAuthorizationMiddleware;
 
 /*
  * The default class to use for all routes
@@ -102,3 +103,22 @@ Router::scope('/', function (RouteBuilder $routes) {
  * });
  * ```
  */
+Router::prefix('admin', function ($routes) {
+    // All routes created in this scope will be prefixed with '/admin'
+    $routes->connect('/', ['controller' => 'users', 'action' => 'index']);
+    $routes->registerMiddleware('csrf', new CsrfProtectionMiddleware([
+        'httpOnly' => true,
+    ]));
+    $routes->registerMiddleware('adminAuth', new AdminAuthorizationMiddleware([
+        'httpOnly' => true,
+    ]));
+    /*
+     * Apply a middleware to the current route scope.
+     * Requires middleware to be registered through `Application::routes()` with `registerMiddleware()`
+     */
+    $routes->applyMiddleware('csrf');
+    $routes->applyMiddleware('adminAuth');
+
+    // Define more routes as needed
+    $routes->fallbacks(DashedRoute::class);
+});

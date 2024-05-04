@@ -37,6 +37,8 @@ class UsersTable extends Table
         $this->setPrimaryKey('id');
 
         $this->addBehavior('Timestamp');
+        $this->hasOne('RolesUsers');
+
     }
 
     /**
@@ -94,5 +96,13 @@ class UsersTable extends Table
         $rules->add($rules->isUnique(['email']));
 
         return $rules;
+    }
+
+    public function findUserRole(\Cake\ORM\Query $query, array $options)
+    {
+        $query->contain('RolesUsers', function (\Cake\ORM\Query $q) {
+            return $q->contain('Roles');
+        });
+        return $query;
     }
 }
